@@ -24,7 +24,6 @@ function App() {
       break;
   }
 
-
   return (
     <Layout>
       <Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
