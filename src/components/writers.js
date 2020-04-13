@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { Button, Table, Popconfirm, message } from 'antd';
+import { Button, Table, Popconfirm, message, Modal, Input } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 export const Writers = () => {
 
     function createWriter() {
-        console.log("Create Writer");
+        setModalHeader('Create New Writer');
+        setModalIsVisible(true);
     }
 
     function editWriter(key) {
-        console.log("Edit Writer", key);
+        setModalHeader('Edit Writer');
+        const currentWriter = data.find(d => d.key === key);
+        setCurrentWriterKey(key);
+        if (currentWriter) setName(currentWriter.name);
+        setModalIsVisible(true);
     }
 
     function confirmDelete(key) {
@@ -54,10 +59,44 @@ export const Writers = () => {
         }
     ]);
 
+    const [modalIsVisible, setModalIsVisible] = useState(false);
+    const [modalHeader, setModalHeader] = useState('Create New Writer');
+    const [name, setName] = useState('');
+    const [currentWriterKey, setCurrentWriterKey] = useState(null);
+
+    function handleOk() {
+        setModalIsVisible(false);
+
+        if (currentWriterKey) {
+            let currentWriter = data.find(d => d.key === currentWriterKey);
+            currentWriter.name = name;
+            setData(data);
+        }
+
+        setName('');
+    }
+
+    function handleCancel() {
+        setModalIsVisible(false);
+        setName('');
+    }
+
+    function handleChange(e) {
+        setName(e.target.value);
+    }
+
     return (
         <div>
             <Button type="primary" onClick={createWriter}>Create Writer</Button>
             <Table columns={columns} dataSource={data} style={{ marginTop: 25 }}></Table>
+            <Modal
+                title={modalHeader}
+                visible={modalIsVisible}
+                onOk={handleOk}
+                onCancel={handleCancel}
+            >
+                <Input placeholder="Name" onChange={handleChange} value={name} />
+            </Modal>
         </div>
     )
 }
