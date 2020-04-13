@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Dropdown, Button, Menu, Space, Table, Popconfirm, message } from 'antd';
 import { DownOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 
 export const Outlines = () => {
 
@@ -43,14 +44,6 @@ export const Outlines = () => {
         </Menu>
     );
 
-    function createOutline() {
-        console.log("TODO: Create outline");
-    }
-
-    function editOutline(key) {
-        console.log("Edit outline", key);
-    }
-
     function confirmDelete(key) {
         const newData = data.filter(d => d.key !== key);
         setData(newData);
@@ -83,7 +76,9 @@ export const Outlines = () => {
             key: 'action',
             render: (text, record) => (
                 <span>
-                    <Button type="link" onClick={() => editOutline(record.key)} icon={<EditOutlined />} />
+                    <Link to={`/outlines/edit/${record.key}`}>
+                        <EditOutlined style={{ fontSize: 16 }} />
+                    </Link>
                     <Popconfirm
                         title={`Are you sure you want to delete the outline: "${record.title}?"`}
                         onConfirm={() => confirmDelete(record.key)}
@@ -123,7 +118,9 @@ export const Outlines = () => {
                         {dropdownText} <DownOutlined />
                     </Button>
                 </Dropdown>
-                <Button type="primary" onClick={createOutline}>Create Outline</Button>
+                <Button type="primary">
+                    <Link to="/outlines/edit/">Create Outline</Link>
+                </Button>
             </Space>
             <Table columns={columns} dataSource={data} style={{ marginTop: 25 }}></Table>
         </div>

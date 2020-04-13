@@ -6,6 +6,8 @@ import './App.css';
 import { Outlines } from './components/outlines.';
 import { Templates } from './components/templates';
 import { Writers } from './components/writers';
+import { TemplateEdit } from './components/templateEdit';
+import { OutlinesEdit } from './components/outlinesEdit';
 
 function App() {
   const { Header, Content, Footer } = Layout;
@@ -43,7 +45,10 @@ function App() {
       <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
         <div className="site-layout-background" style={{ padding: 24, minHeight: 380 }}>
           <Route path="/" exact component={Outlines} />
+          <Route path="/outlines/edit" exact component={OutlinesEdit} />
+          <Route path="/outlines/edit/:key" exact component={OutlinesEdit} />
           <Route path="/templates" component={Templates} />
+          <Route path="/templates/:key" component={TemplateEdit} />
           <Route path="/writers" component={Writers} />
         </div>
       </Content>
