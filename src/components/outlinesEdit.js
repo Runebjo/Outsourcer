@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Form, Input, Button, Dropdown, Row, Col, Space } from 'antd';
+import { Form, Input, Button, Select, Row, Col, Space } from 'antd';
+import { Link } from 'react-router-dom';
 
 export const OutlinesEdit = () => {
 
@@ -9,10 +10,31 @@ export const OutlinesEdit = () => {
     const [requirements, setRequirements] = useState('');
     const [outro, setOutro] = useState('');
 
+    const { Option } = Select;
+
     const layout = {
         labelCol: { span: 4 },
         wrapperCol: { span: 24 },
     };
+
+    const templates = [
+        { id: 1, name: "Response post" },
+        { id: 2, name: "vs post" },
+        { id: 3, name: "Best X from Y" }
+    ]
+
+    const statuses = [
+        { id: 1, name: "Unwritten" },
+        { id: 2, name: "Waiting Response" },
+        { id: 3, name: "In Progress" },
+        { id: 4, name: "Published" }
+    ]
+
+    const writers = [
+        { id: 1, name: "Subho" },
+        { id: 2, name: "Lalegarde" },
+        { id: 3, name: "MonetizedSite" }
+    ]
 
     const onFinish = values => {
         console.log('Success:', values);
@@ -35,6 +57,10 @@ export const OutlinesEdit = () => {
         )
     }
 
+    function onTemplateChange(key) {
+        console.log("template change", key);
+    }
+
     return (
         <>
             <h1 style={{ marginLeft: 38, marginBottom: 30 }}>Create Outline</h1>
@@ -50,7 +76,15 @@ export const OutlinesEdit = () => {
                             label="From Template"
                             name="template"
                         >
-                            <Input />
+                            <Select
+                                placeholder="Select a template"
+                                onChange={onTemplateChange}
+                                allowClear
+                            >
+                                {templates.map(t => {
+                                    return <Option key={t.id} value={t.id}>{t.name}</Option>
+                                })}
+                            </Select>
                         </Form.Item>
 
                         <Form.Item
@@ -90,14 +124,20 @@ export const OutlinesEdit = () => {
                             label="Preview"
                             name="preview"
                         >
-                            {/* <Input.TextArea rows={13} disabled value={title} /> */}
                             {preview()}
                         </Form.Item>
                         <Form.Item
                             label="Writer"
                             name="writer"
                         >
-                            <Input />
+                            <Select
+                                placeholder="Select Writer"
+                                allowClear
+                            >
+                                {writers.map(t => {
+                                    return <Option key={t.id} value={t.name}>{t.name}</Option>
+                                })}
+                            </Select>
                         </Form.Item>
                         <Form.Item
                             label="Review Writer"
@@ -109,7 +149,14 @@ export const OutlinesEdit = () => {
                             label="Status"
                             name="status"
                         >
-                            <Input />
+                            <Select
+                                placeholder="Select Status"
+                                allowClear
+                            >
+                                {statuses.map(t => {
+                                    return <Option key={t.id} value={t.name}>{t.name}</Option>
+                                })}
+                            </Select>
                         </Form.Item>
                     </Col>
                 </Row>
@@ -118,11 +165,11 @@ export const OutlinesEdit = () => {
                         <Form.Item>
                             <Space size="middle">
                                 <Button type="default" htmlType="button">
-                                    Cancel
-                            </Button>
+                                    <Link to="/">Cancel</Link>
+                                </Button>
                                 <Button type="primary" htmlType="submit">
                                     Submit
-                            </Button>
+                                </Button>
                             </Space>
                         </Form.Item>
                     </Col>
