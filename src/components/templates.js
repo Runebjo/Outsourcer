@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Table, Popconfirm, message } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 
 export const Templates = () => {
 
@@ -56,7 +57,9 @@ export const Templates = () => {
 
     return (
         <div>
-            <Button type="primary" onClick={createTemplate}>Create Template</Button>
+            <Button type="primary" onClick={createTemplate}>
+                <Link to="/templates/edit/">Create Template</Link>
+            </Button>
             <Table columns={columns} dataSource={data} style={{ marginTop: 25 }}></Table>
         </div>
     )

@@ -47,8 +47,9 @@ function App() {
           <Route path="/" exact component={Outlines} />
           <Route path="/outlines/edit" exact component={OutlinesEdit} />
           <Route path="/outlines/edit/:key" exact component={OutlinesEdit} />
-          <Route path="/templates" component={Templates} />
-          <Route path="/templates/:key" component={TemplateEdit} />
+          <Route path="/templates" exact component={Templates} />
+          <Route path="/templates/edit" component={TemplateEdit} />
+          <Route path="/templates/edit/:key" component={TemplateEdit} />
           <Route path="/writers" component={Writers} />
         </div>
       </Content>
