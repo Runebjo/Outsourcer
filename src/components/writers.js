@@ -1,8 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Table, Popconfirm, message, Modal, Input } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import axios from 'axios';
 
 export const Writers = () => {
+
+    const [data, setData] = useState([]);
+    const [modalIsVisible, setModalIsVisible] = useState(false);
+    const [modalHeader, setModalHeader] = useState('Create New Writer');
+    const [name, setName] = useState('');
+    const [currentWriterKey, setCurrentWriterKey] = useState(null);
+
+    const baseAddress = 'http://localhost:5000';
+
+    useEffect(() => {
+        getWriters();
+    }, [])
+
+    async function getWriters() {
+        try {
+            const writers = (await axios.get(`${baseAddress}/writers`)).data.map(w => {
+                return { key: w._id, name: w.name };
+            });
+            console.log("writers", writers);
+            setData(writers);
+        } catch (error) {
+            console.log(`error getting writers: ${error}`);
+        }
+
+    }
 
     function createWriter() {
         setModalHeader('Create New Writer');
@@ -17,10 +43,13 @@ export const Writers = () => {
         setModalIsVisible(true);
     }
 
-    function confirmDelete(key) {
-        const newData = data.filter(d => d.key !== key);
-        setData(newData);
-        message.success("Outline Deleted");
+    async function confirmDelete(key) {
+        try {
+            await axios.delete(`${baseAddress}/writers/delete/${key}`);
+            await getWriters();
+        } catch (error) {
+            console.log("error on delete", error);
+        }
     }
 
     const columns = [
@@ -48,37 +77,37 @@ export const Writers = () => {
         }
     ];
 
-    const [data, setData] = useState([
-        {
-            key: 1,
-            name: 'Subho'
-        },
-        {
-            key: 2,
-            name: 'Lalagarde'
-        }
-    ]);
-
-    const [modalIsVisible, setModalIsVisible] = useState(false);
-    const [modalHeader, setModalHeader] = useState('Create New Writer');
-    const [name, setName] = useState('');
-    const [currentWriterKey, setCurrentWriterKey] = useState(null);
-
-    function handleOk() {
+    async function handleOk() {
         setModalIsVisible(false);
 
         if (currentWriterKey) {
             let currentWriter = data.find(d => d.key === currentWriterKey);
             currentWriter.name = name;
-            setData(data);
+            try {
+                await axios.put(`${baseAddress}/writers/edit/${currentWriter.key}`, { name: currentWriter.name });
+                await getWriters();
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        else {
+            console.log("is new writer");
+            try {
+                await axios.post(`${baseAddress}/writers/add`, { name });
+                await getWriters();
+            } catch (error) {
+                console.log(error)
+            }
         }
 
         setName('');
+        setCurrentWriterKey('');
     }
 
     function handleCancel() {
         setModalIsVisible(false);
         setName('');
+        setCurrentWriterKey('');
     }
 
     function handleChange(e) {
