@@ -1,9 +1,32 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Table, Popconfirm, message } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 export const Templates = () => {
+
+    const baseAddress = 'http://localhost:5000';
+    const route = 'templates';
+
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        getTemplates();
+    }, [])
+
+    async function getTemplates() {
+        try {
+            const templates = (await axios.get(`${baseAddress}/${route}`)).data.map(t => {
+                return { key: t._id, name: t.name };
+            });
+            setData(templates);
+
+        } catch (error) {
+            message.error('Error getting templates');
+            console.log(error);
+        }
+    }
 
     function createTemplate() {
         console.log("Create Template");
@@ -13,10 +36,14 @@ export const Templates = () => {
         console.log("Edit outline", key);
     }
 
-    function confirmDelete(key) {
-        const newData = data.filter(d => d.key !== key);
-        setData(newData);
-        message.success("Outline Deleted");
+    async function confirmDelete(key) {
+        try {
+            await axios.delete(`${baseAddress}/${route}/delete/${key}`);
+            await getTemplates();
+        } catch (error) {
+            console.log("error on delete", error);
+        }
+        message.success("Template Deleted");
     }
 
     const columns = [
@@ -43,17 +70,6 @@ export const Templates = () => {
             )
         }
     ];
-
-    const [data, setData] = useState([
-        {
-            key: 1,
-            name: 'Response post'
-        },
-        {
-            key: 2,
-            name: 'vs post'
-        }
-    ]);
 
     return (
         <div>

@@ -1,20 +1,26 @@
 import React from 'react'
-import { Form, Input, Button, Row, Col, Space } from 'antd';
+import { Form, Input, Button, Row, Col, Space, message } from 'antd';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 export const TemplateEdit = () => {
+
+    const baseAddress = 'http://localhost:5000';
+    const route = 'templates';
 
     const layout = {
         labelCol: { span: 4 },
         wrapperCol: { span: 24 },
     };
 
-    function onFinish(e) {
-        console.log(e);
+    async function onFinish(template) {
+        await axios.post(`${baseAddress}/${route}/add`, template);
+        message.success('Templated Saved!');
     }
 
     function onFinishFailed(e) {
         console.log(e);
+        message.error('Error saving template');
     }
 
     return (
@@ -28,6 +34,12 @@ export const TemplateEdit = () => {
             >
                 <Row gutter={24}>
                     <Col offset={4} span={12}>
+                        <Form.Item
+                            label="Name"
+                            name="name"
+                        >
+                            <Input />
+                        </Form.Item>
                         <Form.Item
                             label="Intro"
                             name="intro"
