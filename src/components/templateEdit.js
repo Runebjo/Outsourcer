@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form, Input, Button, Row, Col, Space, message } from 'antd';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
@@ -20,6 +20,8 @@ export const TemplateEdit = (props) => {
     useEffect(() => {
         getTemplate();
     });
+
+    const pageTitle = key ? 'Edit Template' : 'Create Template';
 
     async function getTemplate() {
         if (key) {
@@ -51,11 +53,15 @@ export const TemplateEdit = (props) => {
 
     return (
         <>
-            <h1 style={{ marginLeft: 38, marginBottom: 30 }}>Create Template</h1>
+            <Row gutter={24}>
+                <Col offset={6} span={12}>
+                    <h1 style={{ marginBottom: 30 }}>{pageTitle}</h1>
+                </Col>
+            </Row>
             <Form
                 {...layout}
                 form={form}
-                name="advanced_search"
+                name="template_form"
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
             >
