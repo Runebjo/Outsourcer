@@ -1,14 +1,24 @@
-import React, { useState } from 'react'
-import { Form, Input, Button, Select, Row, Col, Space } from 'antd';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import { Form, Input, Button, Select, Row, Col, Space, message } from 'antd';
+import { Link, useParams, useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 export const OutlinesEdit = () => {
+    const baseAddress = 'http://localhost:5000';
+    const route = 'outlines';
 
     const [title, setTitle] = useState('');
     const [intro, setIntro] = useState('');
     const [outline, setOutline] = useState('');
     const [requirements, setRequirements] = useState('');
     const [outro, setOutro] = useState('');
+    const { key } = useParams();
+    const [form] = Form.useForm();
+    const history = useHistory();
+
+    useEffect(() => {
+        getOutline();
+    })
 
     const { Option } = Select;
 
@@ -16,6 +26,20 @@ export const OutlinesEdit = () => {
         labelCol: { span: 4 },
         wrapperCol: { span: 24 },
     };
+
+    const pageTitle = key ? 'Edit Outline' : 'Create Outline';
+
+    async function getOutline() {
+        if (key) {
+            try {
+                const outline = (await axios.get(`${baseAddress}/${route}/${key}`)).data;
+                form.setFieldsValue(outline);
+            } catch (error) {
+                message.error("Failed to get template");
+                console.log(error);
+            }
+        }
+    }
 
     const templates = [
         { id: 1, name: "Response post" },
@@ -36,8 +60,14 @@ export const OutlinesEdit = () => {
         { id: 3, name: "MonetizedSite" }
     ]
 
-    const onFinish = values => {
-        console.log('Success:', values);
+    const onFinish = async outline => {
+        try {
+            await axios.post(`${baseAddress}/${route}/add`, outline);
+            console.log('Success:', outline);
+        } catch (error) {
+            console.log(error);
+        }
+
     };
 
     const onFinishFailed = errorInfo => {
@@ -63,10 +93,11 @@ export const OutlinesEdit = () => {
 
     return (
         <>
-            <h1 style={{ marginLeft: 38, marginBottom: 30 }}>Create Outline</h1>
+            <h1 style={{ marginLeft: 38, marginBottom: 30 }}>{pageTitle}</h1>
             <Form
                 {...layout}
-                name="advanced_search"
+                name="outline_form"
+                form={form}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
             >

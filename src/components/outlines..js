@@ -1,25 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dropdown, Button, Menu, Space, Table, Popconfirm, message } from 'antd';
 import { DownOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 export const Outlines = () => {
+    const baseAddress = 'http://localhost:5000';
+    const route = 'outlines';
 
     const [dropdownText, setDropdownText] = useState('Filter Status');
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        getOutlines();
+    }, [])
+
+    async function getOutlines(status) {
+        try {
+            const url = status ? `${baseAddress}/${route}/?status=${status}` : `${baseAddress}/${route}`;
+            const outlines = (await axios.get(url)).data.map(t => {
+                return { key: t._id, title: t.title, writer: t.writer, status: t.status };
+            });
+            console.log(outlines);
+            setData(outlines);
+
+        } catch (error) {
+            message.error('Error getting templates');
+            console.log(error);
+        }
+    }
 
     function handleMenuClick(e) {
         switch (e.key) {
             case "1":
                 setDropdownText('Unwritten');
+                getOutlines('Unwritten');
                 break;
             case "2":
                 setDropdownText('Waiting Response');
+                getOutlines('Waiting Response');
                 break;
             case "3":
                 setDropdownText('In Progress');
+                getOutlines('In Progress');
                 break;
             case "4":
                 setDropdownText('Published');
+                getOutlines('Published');
+                break;
+            case "5":
+                setDropdownText('All');
+                getOutlines();
                 break;
             default:
                 setDropdownText('Filter Status');
@@ -31,23 +62,32 @@ export const Outlines = () => {
         <Menu onClick={handleMenuClick}>
             <Menu.Item key="1">
                 Unwritten
-          </Menu.Item>
+            </Menu.Item>
             <Menu.Item key="2">
                 Waiting Response
-          </Menu.Item>
+            </Menu.Item>
             <Menu.Item key="3">
                 In Progress
-          </Menu.Item>
+             </Menu.Item>
             <Menu.Item key="4">
                 Published
-          </Menu.Item>
+            </Menu.Item>
+            <Menu.Item key="5">
+                All
+            </Menu.Item>
         </Menu>
     );
 
-    function confirmDelete(key) {
-        const newData = data.filter(d => d.key !== key);
-        setData(newData);
-        message.success("Outline Deleted");
+    async function confirmDelete(key) {
+        try {
+            await axios.delete(`${baseAddress}/${route}/delete/${key}`);
+            await getOutlines();
+            message.success("Outline Deleted");
+        } catch (error) {
+            console.log("error on delete", error);
+            message.success("Error deleting outline");
+        }
+
     }
 
     const columns = [
@@ -91,24 +131,6 @@ export const Outlines = () => {
             )
         }
     ];
-
-    const [data, setData] = useState([
-        {
-            key: 1,
-            title: 'Should you use Headphones for Video Interviews?',
-            publishedDate: '21/3-2020',
-            writer: 'Subho',
-            status: 'In Progress'
-        },
-        {
-            key: 2,
-            title: 'sony wh-1000xm3 vs sony wh-xb900n (Which to buy?)',
-            publishedDate: '28/3-2020',
-            writer: 'Lalegarde',
-            status: 'Published'
-        }
-    ]);
-
 
     return (
         <div>

@@ -3,8 +3,7 @@ import { Form, Input, Button, Row, Col, Space, message } from 'antd';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
-export const TemplateEdit = (props) => {
-
+export const TemplateEdit = () => {
     const baseAddress = 'http://localhost:5000';
     const route = 'templates';
 
