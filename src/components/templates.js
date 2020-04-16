@@ -28,14 +28,6 @@ export const Templates = () => {
         }
     }
 
-    function createTemplate() {
-        console.log("Create Template");
-    }
-
-    function editTemplate(key) {
-        console.log("Edit outline", key);
-    }
-
     async function confirmDelete(key) {
         try {
             await axios.delete(`${baseAddress}/${route}/delete/${key}`);
@@ -57,7 +49,9 @@ export const Templates = () => {
             key: 'action',
             render: (text, record) => (
                 <span style={{ float: 'right' }}>
-                    <Button type="link" onClick={() => editTemplate(record.key)} icon={<EditOutlined />} />
+                    <Link to={`/templates/edit/${record.key}`}>
+                        <EditOutlined style={{ fontSize: 16 }} />
+                    </Link>
                     <Popconfirm
                         title={`Are you sure you want to delete the template: "${record.name}?"`}
                         onConfirm={() => confirmDelete(record.key)}
@@ -73,7 +67,7 @@ export const Templates = () => {
 
     return (
         <div>
-            <Button type="primary" onClick={createTemplate}>
+            <Button type="primary">
                 <Link to="/templates/edit/">Create Template</Link>
             </Button>
             <Table columns={columns} dataSource={data} style={{ marginTop: 25 }}></Table>

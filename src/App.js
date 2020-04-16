@@ -48,9 +48,9 @@ function App() {
           <Route path="/outlines/edit" exact component={OutlinesEdit} />
           <Route path="/outlines/edit/:key" exact component={OutlinesEdit} />
           <Route path="/templates" exact component={Templates} />
-          <Route path="/templates/edit" component={TemplateEdit} />
-          <Route path="/templates/edit/:key" component={TemplateEdit} />
-          <Route path="/writers" component={Writers} />
+          <Route path="/templates/edit" exact component={TemplateEdit} />
+          <Route path="/templates/edit/:key" exact component={TemplateEdit} />
+          <Route path="/writers" exact component={Writers} />
         </div>
       </Content>
       <Footer style={{ textAlign: 'center' }}>Bear Solutions ©2020</Footer>
