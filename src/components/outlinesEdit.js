@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Select, Row, Col, Space, message } from 'antd';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from './../hooks/useForm';
+import { useHttp } from './../hooks/useHttp';
 
 export const OutlinesEdit = () => {
 	const baseAddress = 'http://localhost:5000';
 	const route = 'outlines';
 
-	const [formValue, onChangeForm] = useForm({
+	const [formValues, onChangeForm] = useForm({
 		title: '',
 		intro: '',
 		outline: '',
@@ -19,6 +20,9 @@ export const OutlinesEdit = () => {
 	const { key } = useParams();
 	const [form] = Form.useForm();
 	const history = useHistory();
+
+	const { url, setUrl } = useState('');
+	const { data, loading } = useHttp(url);
 
 	useEffect(() => {
 		getOutline();
@@ -66,9 +70,15 @@ export const OutlinesEdit = () => {
 
 	const onFinish = async outline => {
 		try {
-			await axios.post(`${baseAddress}/${route}/add`, outline);
-			console.log('Success:', outline);
+			if (key) {
+				await axios.put(`${baseAddress}/${route}/edit/${key}`, outline);
+			} else {
+				await axios.post(`${baseAddress}/${route}/add`, outline);
+			}
+			history.push('/');
+			message.success('Outline Saved!');
 		} catch (error) {
+			message.error('Error saving outline');
 			console.log(error);
 		}
 	};
@@ -78,32 +88,31 @@ export const OutlinesEdit = () => {
 	};
 
 	function preview() {
-		console.log('preview');
 		return (
 			<div style={{ border: '1px solid #ccc', height: 430, padding: 10, whiteSpace: 'pre-wrap' }}>
-				<p>{formValue.intro}</p>
-				{formValue.title && (
+				<p>{formValues.intro}</p>
+				{formValues.title && (
 					<p>
 						Article Title:
 						<br />
-						{formValue.title}
+						{formValues.title}
 					</p>
 				)}
-				{formValue.outline && (
+				{formValues.outline && (
 					<p>
 						About the article:
 						<br />
-						{formValue.outline}
+						{formValues.outline}
 					</p>
 				)}
-				{formValue.requirements && (
+				{formValues.requirements && (
 					<p>
 						Requirements:
 						<br />
-						{formValue.requirements}
+						{formValues.requirements}
 					</p>
 				)}
-				{formValue.outro && <p>{formValue.outro}</p>}
+				{formValues.outro && <p>{formValues.outro}</p>}
 			</div>
 		);
 	}
@@ -194,7 +203,7 @@ export const OutlinesEdit = () => {
 									<Link to='/'>Cancel</Link>
 								</Button>
 								<Button type='primary' htmlType='submit'>
-									Submit
+									Save
 								</Button>
 							</Space>
 						</Form.Item>
