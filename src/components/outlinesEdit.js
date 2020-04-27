@@ -2,30 +2,37 @@ import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Select, Row, Col, Space, message } from 'antd';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
-import { useForm } from './../hooks/useForm';
-import { useHttp } from './../hooks/useHttp';
 
 export const OutlinesEdit = () => {
 	const baseAddress = 'http://localhost:5000';
 	const route = 'outlines';
 
-	const [formValues, onChangeForm] = useForm({
+	const { key } = useParams();
+	const [form] = Form.useForm();
+	const history = useHistory();
+
+	useEffect(() => {
+		async function getOutline() {
+			if (key) {
+				try {
+					const outline = (await axios.get(`${baseAddress}/${route}/${key}`)).data;
+					form.setFieldsValue(outline);
+					setFormValues(outline);
+				} catch (error) {
+					message.error('Failed to get template');
+					console.log(error);
+				}
+			}
+		}
+		getOutline();
+	}, [form, key]);
+
+	const [formValues, setFormValues] = useState({
 		title: '',
 		intro: '',
 		outline: '',
 		requirements: '',
 		outro: '',
-	});
-
-	const { key } = useParams();
-	const [form] = Form.useForm();
-	const history = useHistory();
-
-	const { url, setUrl } = useState('');
-	const { data, loading } = useHttp(url);
-
-	useEffect(() => {
-		getOutline();
 	});
 
 	const { Option } = Select;
@@ -36,18 +43,6 @@ export const OutlinesEdit = () => {
 	};
 
 	const pageTitle = key ? 'Edit Outline' : 'Create Outline';
-
-	async function getOutline() {
-		if (key) {
-			try {
-				const outline = (await axios.get(`${baseAddress}/${route}/${key}`)).data;
-				form.setFieldsValue(outline);
-			} catch (error) {
-				message.error('Failed to get template');
-				console.log(error);
-			}
-		}
-	}
 
 	const templates = [
 		{ id: 1, name: 'Response post' },
@@ -121,6 +116,13 @@ export const OutlinesEdit = () => {
 		console.log('template change', key);
 	}
 
+	function onChangeForm(e) {
+		setFormValues({
+			...formValues,
+			[e.target.name]: e.target.value,
+		});
+	}
+
 	return (
 		<>
 			<h1 style={{ marginLeft: 38, marginBottom: 30 }}>{pageTitle}</h1>
@@ -148,7 +150,6 @@ export const OutlinesEdit = () => {
 							label='Article Title'
 							name='title'
 							rules={[{ required: true, message: 'Please input an article title!' }]}>
-							{/* <Input onChange={e => setTitle(e.target.value)} /> */}
 							<Input name='title' onChange={onChangeForm} />
 						</Form.Item>
 						<Form.Item label='Intro' name='intro'>
