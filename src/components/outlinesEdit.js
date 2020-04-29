@@ -15,7 +15,8 @@ export const OutlinesEdit = () => {
 		async function getOutline() {
 			if (key) {
 				try {
-					const outline = (await axios.get(`${baseAddress}/${route}/${key}`)).data;
+					const outline = (await axios.get(`${baseAddress}/${route}/${key}`))
+						.data;
 					form.setFieldsValue(outline);
 					setFormValues(outline);
 				} catch (error) {
@@ -27,6 +28,31 @@ export const OutlinesEdit = () => {
 		getOutline();
 	}, [form, key]);
 
+	useEffect(() => {
+		async function getTemplates() {
+			try {
+				const templatesData = (await axios.get(`${baseAddress}/templates`))
+					.data;
+				setTemplates(templatesData);
+			} catch (error) {
+				console.log(error);
+			}
+		}
+		getTemplates();
+	}, [form]);
+
+	useEffect(() => {
+		async function getWriters() {
+			try {
+				const writersData = (await axios.get(`${baseAddress}/writers`)).data;
+				setWriters(writersData);
+			} catch (error) {
+				console.log('error', error);
+			}
+		}
+		getWriters();
+	}, []);
+
 	const [formValues, setFormValues] = useState({
 		title: '',
 		intro: '',
@@ -34,6 +60,9 @@ export const OutlinesEdit = () => {
 		requirements: '',
 		outro: '',
 	});
+
+	const [templates, setTemplates] = useState([]);
+	const [writers, setWriters] = useState([]);
 
 	const { Option } = Select;
 
@@ -44,23 +73,11 @@ export const OutlinesEdit = () => {
 
 	const pageTitle = key ? 'Edit Outline' : 'Create Outline';
 
-	const templates = [
-		{ id: 1, name: 'Response post' },
-		{ id: 2, name: 'vs post' },
-		{ id: 3, name: 'Best X from Y' },
-	];
-
 	const statuses = [
 		{ id: 1, name: 'Unwritten' },
 		{ id: 2, name: 'Waiting Response' },
 		{ id: 3, name: 'In Progress' },
 		{ id: 4, name: 'Published' },
-	];
-
-	const writers = [
-		{ id: 1, name: 'Subho' },
-		{ id: 2, name: 'Lalegarde' },
-		{ id: 3, name: 'MonetizedSite' },
 	];
 
 	const onFinish = async outline => {
@@ -84,7 +101,13 @@ export const OutlinesEdit = () => {
 
 	function preview() {
 		return (
-			<div style={{ border: '1px solid #ccc', height: 430, padding: 10, whiteSpace: 'pre-wrap' }}>
+			<div
+				style={{
+					border: '1px solid #ccc',
+					height: 430,
+					padding: 10,
+					whiteSpace: 'pre-wrap',
+				}}>
 				<p>{formValues.intro}</p>
 				{formValues.title && (
 					<p>
@@ -113,7 +136,9 @@ export const OutlinesEdit = () => {
 	}
 
 	function onTemplateChange(key) {
-		console.log('template change', key);
+		const template = templates.find(template => template._id === key);
+		form.setFieldsValue(template);
+		setFormValues(template);
 	}
 
 	function onChangeForm(e) {
@@ -135,10 +160,13 @@ export const OutlinesEdit = () => {
 				<Row gutter={24}>
 					<Col span={12}>
 						<Form.Item label='From Template' name='template'>
-							<Select placeholder='Select a template' onChange={onTemplateChange} allowClear>
+							<Select
+								placeholder='Select a template'
+								onChange={onTemplateChange}
+								allowClear>
 								{templates.map(t => {
 									return (
-										<Option key={t.id} value={t.id}>
+										<Option key={t._id} value={t.id}>
 											{t.name}
 										</Option>
 									);
@@ -149,7 +177,9 @@ export const OutlinesEdit = () => {
 						<Form.Item
 							label='Article Title'
 							name='title'
-							rules={[{ required: true, message: 'Please input an article title!' }]}>
+							rules={[
+								{ required: true, message: 'Please input an article title!' },
+							]}>
 							<Input name='title' onChange={onChangeForm} />
 						</Form.Item>
 						<Form.Item label='Intro' name='intro'>
@@ -159,7 +189,11 @@ export const OutlinesEdit = () => {
 							<Input.TextArea rows={8} onChange={onChangeForm} name='outline' />
 						</Form.Item>
 						<Form.Item label='Requirements' name='requirements'>
-							<Input.TextArea rows={4} onChange={onChangeForm} name='requirements' />
+							<Input.TextArea
+								rows={4}
+								onChange={onChangeForm}
+								name='requirements'
+							/>
 						</Form.Item>
 						<Form.Item label='Outro' name='outro'>
 							<Input.TextArea rows={4} onChange={onChangeForm} name='outro' />
@@ -173,7 +207,7 @@ export const OutlinesEdit = () => {
 							<Select placeholder='Select Writer' allowClear>
 								{writers.map(t => {
 									return (
-										<Option key={t.id} value={t.name}>
+										<Option key={t._id} value={t.name}>
 											{t.name}
 										</Option>
 									);
